@@ -192,7 +192,7 @@ void AProjectile::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimiti
 			const auto Root = Cast<UPrimitiveComponent>(HitTarget->GetRootComponent());
 			if (Root && Root->IsSimulatingPhysics())
 			{
-				auto Impulse = GetActorForwardVector() * 900; 
+				auto Impulse = (HitTarget->GetActorLocation() - GetActorLocation()) * 10;
 				Root->AddImpulseAtLocation(Impulse, HitTarget->GetActorLocation());
 				//Root->AddForce(GetActorForwardVector() * 1000, Root->GetFName(), false);
 				//GEngine->AddOnScreenDebugMessage(444444, 3, FColor::Red, FString::Printf(TEXT("NotifyHit -- Impulse")), false);
