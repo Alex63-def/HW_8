@@ -29,6 +29,9 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UAudioComponent* AudioEffect;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+		USphereComponent* BlastRegion;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
 		float MoveSpeed = 500;
 
@@ -38,8 +41,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Projectile")
 		int SelfDestructionSec = 3;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Projectile")
+		bool MortalFire = false;
+
 	/*FKillEvent OnKillEvent;
 	FExpEvent OnExpEventProjectile;*/
+
+	virtual void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 protected:
 	// Called when the game starts or when spawned
