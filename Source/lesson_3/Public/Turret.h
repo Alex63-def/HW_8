@@ -30,6 +30,8 @@ public:
 
 	virtual void TakeDamage(FDamageData Damage) override;
 
+	virtual void Fire() override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -53,7 +55,6 @@ private:
 
 	virtual void FindNextTarget() override;
 	virtual void Targeting() override;
-	virtual void Fire() override;
 	virtual void OnDeath() override;
 	virtual void OnHealthChanged(float CurrentHealth) override;
 	virtual void SelfDestruction() override;
