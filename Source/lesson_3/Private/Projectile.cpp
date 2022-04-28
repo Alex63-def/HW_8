@@ -212,6 +212,9 @@ void AProjectile::MoveTick()
 	const auto Location = GetActorLocation();
 	
 	SetActorLocation(Location + GetActorForwardVector() * MoveRate * MoveSpeed, true); 
+	
+	/*auto s = GetVelocity();
+	UE_LOG(LogTanks, Warning, TEXT("%f"), s);*/
 }
 
 void AProjectile::SelfDestruction()

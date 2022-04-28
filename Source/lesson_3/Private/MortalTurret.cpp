@@ -3,6 +3,8 @@
 
 #include "MortalTurret.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "lesson_3/lesson_3.h"
+#include "TankPawn.h"
 
 AMortalTurret::AMortalTurret() : ATurret()
 {
@@ -12,6 +14,14 @@ AMortalTurret::AMortalTurret() : ATurret()
 	
 }
 
+void AMortalTurret::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TurretZ = SceneComponent->GetComponentLocation().Z /*/ 100*/;
+	TurretPosition = GetActorLocation();
+}
+
 void AMortalTurret::Targeting()
 {
 
@@ -19,10 +29,31 @@ void AMortalTurret::Targeting()
 	{
 		return;
 	}
+	
+	auto TargetRotation = UKismetMathLibrary::FindLookAtRotation(SceneComponent->GetComponentLocation(), Target->GetActorLocation()); 
+	
+	if (!TargetZ)
+	{
+		auto TTarget = Cast<ATankPawn>(Target);
+		TargetZ = TTarget->BodyMesh->GetComponentLocation().Z /*/ 150*/;
+	}
+	
+	auto TargetPosition = Target->GetActorLocation();
+	auto Distance = FVector::Dist2D(TurretPosition, TargetPosition) / 150;
 
-	auto TargetRotation = UKismetMathLibrary::FindLookAtRotation(SceneComponent->GetComponentLocation(), Target->GetActorLocation()); // TurretMesh
+	float P = FMath::RadiansToDegrees(FMath::Atan(1/FMath::Tan(ProjectileVelocityPow2 + FMath::Sqrt(ProjectileVelocityPow4 - G * (G * FMath::Pow(Distance, 2) + 2 * ProjectileVelocityPow2 * (0.5/*TurretZ - TargetZ*/))) / (G * Distance))));
+	if (Distance > 4.5f)
+	{
+		P = 45.0f;
+	}
 
-	SceneComponent->SetWorldRotation(FMath::Lerp(SceneComponent->GetComponentRotation(), TargetRotation, TargetingSpeed));
+	float RotateY = TargetRotation.Yaw;
+
+	SceneComponent->SetWorldRotation(FMath::Lerp(SceneComponent->GetComponentRotation(), { P, RotateY, 0.f }, TargetingSpeed));
+
+	FRotator t = { P, RotateY, 0.f };
+	
+	UE_LOG(LogTanks, Warning, TEXT("%s"), *t.ToString());
 
 	int TargetRotationY = TargetRotation.Yaw * 10;
 	int TargetRotationR = TargetRotation.Roll * 10;
@@ -56,9 +87,9 @@ void AMortalTurret::Targeting()
 
 	auto PlayerDirection = Target->GetActorLocation() - GetActorLocation();
 
-	PlayerDirection.Normalize(); // наверное это как число по модулю 
+	PlayerDirection.Normalize(); 
 
-	auto Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(TargetingDirection, PlayerDirection))); // это операция умножения одного вектора на другой и по теореме косинусов вроде найдет угол между векторами
+	auto Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(TargetingDirection, PlayerDirection))); 
 
 	FHitResult Result;
 	FCollisionQueryParams Params;
